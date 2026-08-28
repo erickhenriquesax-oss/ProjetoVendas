@@ -4,22 +4,22 @@ public class Produtos {
 
     private int id;
     private String nome;
-    private float preco;
+    private float valor;
 
     public Produtos() {}
 
-    public Produtos(float preco, String nome, int id) {
-        this.preco = preco;
+    public Produtos(float valor, String nome, int id) {
+        this.valor = valor;
         this.nome = nome;
         this.id = id;
     }
 
-    public float getPreco() {
-        return preco;
+    public float getValor() {
+        return valor;
     }
 
-    public void setPreco(float preco) {
-        this.preco = preco;
+    public void setValor(float preco) {
+        this.valor = preco;
     }
 
     public String getNome() {
@@ -32,5 +32,10 @@ public class Produtos {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + " | Nome: " + nome + " | Valor: " + valor;
     }
 }

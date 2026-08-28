@@ -64,4 +64,28 @@ public class UserDAO {
         }
         return Optional.ofNullable(user);
     }
+
+    public void atualizar(User user){
+        String sql = "UPDATE tb_users SET nome = ?, cpf = ? WHERE id = ?";
+        try(Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1, user.getNome());
+            stmt.setString(2, user.getCpf());
+            stmt.setInt(3, user.getId());
+            stmt.execute();
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public void excluir(int id){
+        String sql = "DELETE FROM tb_users WHERE id = ?";
+        try(Connection conn = ConnectionFactory.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setInt(1, id);
+            stmt.execute();
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
 }
