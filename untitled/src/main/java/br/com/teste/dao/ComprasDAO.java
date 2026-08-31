@@ -14,21 +14,26 @@ import java.util.Optional;
 
 public class ComprasDAO {
 
-    public void cadastrar(Compras compras) {
-        String sql = "INSERT INTO compras (id_user, data_compra, valor_total) values (?, ?, null)";
+    public int cadastrar(Compras compras) {
+        String sql = "INSERT INTO tb_compras (id_user, data_compra, valor_total) values (?, ?, null) RETURNING id";
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, compras.getId_user());
-            stmt.setString(2, compras.getData_compra().toString());
-            stmt.setFloat(3, compras.getValor_total());
-            stmt.execute();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            stmt.setDate(2, java.sql.Date.valueOf(compras.getData_compra()));
+
+            try (ResultSet resultado = stmt.executeQuery()) {
+                if (resultado.next()) {
+                    return resultado.getInt("id");
+                }
+                throw new RuntimeException("Não foi possível recuperar o id da compra cadastrada.");
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
     public List<Compras> listarTodasCompras() {
-        String sql = "SELECT * FROM compras";
+        String sql = "SELECT * FROM tb_compras";
         List<Compras> compras = new ArrayList<>();
         try (Connection conn = ConnectionFactory.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -36,12 +41,13 @@ public class ComprasDAO {
 
             while (resultado.next()) {
                 int id = resultado.getInt("id");
+                int id_user = resultado.getInt("id_user");
                 LocalDate data = resultado.getDate("data_compra").toLocalDate();
                 float valor_total = resultado.getFloat("valor_total");
-                compras.add(new Compras(id, data, valor_total));
+                compras.add(new Compras(id, id_user, data, valor_total));
             }
 
-        } catch (RuntimeException | SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         return compras;
@@ -49,18 +55,44 @@ public class ComprasDAO {
 
     public Optional<Compras> buscarPorId(int id) {
         Compras compras = null;
-        String sql = "SELECT * FROM compras WHERE id = ?";
-        try(Connection conn = ConnectionFactory.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT * FROM tb_compras WHERE id = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
 
-            try(ResultSet resultado = stmt.executeQuery()) {
+            try (ResultSet resultado = stmt.executeQuery()) {
                 if (resultado.next()) {
-
+                    int id_user = resultado.getInt("id_user");
+                    String data_compra = resultado.getString("data_compra");
+                    float valor_total = resultado.getFloat("valor_total");
+                    compras = new Compras(id, id_user, LocalDate.parse(data_compra), valor_total);
                 }
             }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.ofNullable(compras);
+    }
 
-        }catch (RuntimeException | SQLException e) {
+    public void excluir(int id) {
+        String sql = "DELETE FROM tb_compras WHERE id = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void atualizarValorTotal(int id, float valor_total) {
+        String sql = "UPDATE tb_compras SET valor_total = ? WHERE id = ?";
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setFloat(1, valor_total);
+            stmt.setInt(2, id);
+            stmt.execute();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
