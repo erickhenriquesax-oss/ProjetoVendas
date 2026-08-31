@@ -113,7 +113,7 @@ public class Main {
             System.out.println("Item adicionado com sucesso!");
             System.out.println("Deseja adicionar mais algum produto?");
             System.out.println("1. Adicionar mais algum produto");
-            System.out.println("0. Voltar");
+            System.out.println("0. Não desejo");
             opcao = scan.nextInt();
             scan.nextLine();
         }
