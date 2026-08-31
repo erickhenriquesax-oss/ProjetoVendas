@@ -1,13 +1,20 @@
 package br.com.teste.main;
 
+import br.com.teste.dao.ComprasDAO;
+import br.com.teste.dao.ItensCompraDAO;
 import br.com.teste.dao.ProdutosDAO;
 import br.com.teste.dao.UserDAO;
 import br.com.teste.jdbc.ConnectionFactory;
+import br.com.teste.model.Compras;
+import br.com.teste.model.ItensCompra;
 import br.com.teste.model.Produtos;
 import br.com.teste.model.User;
 
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Main {
@@ -27,26 +34,90 @@ public class Main {
             System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("1. Menu Usuário");
             System.out.println("2. Menu Produtos");
+            System.out.println("3. Menu Compras");
             System.out.println("0. Sair");
             System.out.print("Escolha uma opção: ");
-
-            opcao = scan.nextInt();       // ← leitura que estava faltando
-            scan.nextLine();              // limpa o buffer
+            opcao = scan.nextInt();
+            scan.nextLine();
 
             switch (opcao) {
-                case 1:
-                    menuUsuario();
-                    break;
-                case 2:
-                    menuProdutos();
-                    break;
-                case 0:
-                    System.out.println("Tchau!");
-                    break;
-                default:
-                    System.out.println("Opção inválida!");
+                case 1 ->menuUsuario();
+                case 2 ->menuProdutos();
+                case 3 ->menuCompras();
+                case 0 -> System.out.println("Tchau!");
+                default -> System.out.println("Opção inválida!");
             }
         }
+    }
+    // ===================== MENU COMPRAS =====================
+    private static void menuCompras() {
+        int opcao = -1;
+        while (opcao != 0) {
+            System.out.println("\n=== MENU PRODUTOS ===");
+            System.out.println("1. Realizar Compra");
+            System.out.println("2. Listar Compras por ID");
+            System.out.println("3. Buscar por Compra e Produto");
+            System.out.println("0. Sair");
+            System.out.print("Escolha uma opcao: ");
+            opcao = scan.nextInt();
+            scan.nextLine();
+
+            switch (opcao) {
+                case 1 -> realizarCompra();
+            }
+        }
+    }
+
+
+
+    // ===================== AÇÕES DE COMPRA =====================
+    private static void realizarCompra() {
+        Compras compra = new Compras();
+        listarTodosUsuarios();
+        System.out.println("Digite o ID do usuário que fará a compra");
+        compra.setId_user(scan.nextInt());
+        scan.nextLine();
+        compra.setData_compra(LocalDate.now());
+        float totalProv = 0;
+        compra.setValor_total(totalProv);
+        ComprasDAO compraDAO = new ComprasDAO();
+        int idGerado = compraDAO.cadastrar(compra);
+        System.out.println("O ID de compra é: " +idGerado);
+
+        int opcao = -1;
+        ItensCompraDAO itensCompraDAO = new ItensCompraDAO();
+        while (opcao != 0) {
+            listarTodosProdutos();
+            System.out.println("Digite o ID do produto a comprar");
+            int idProd = scan.nextInt();
+            scan.nextLine();
+            System.out.println("Digite a quantidade que irá comprar");
+            int quantidade = scan.nextInt();
+            scan.nextLine();
+
+            ProdutosDAO produtoDAO = new ProdutosDAO();
+            Optional<Produtos> resultado = produtoDAO.buscarPorId(idProd);
+            Produtos produto = resultado.orElse(null);
+            if (produto == null) {
+                System.out.println("Produto não encontrado");
+                continue;
+            }
+            Optional <ItensCompra> verificar = itensCompraDAO.buscarPorCompraEProduto(idGerado, idProd);
+            if (verificar.isPresent()) {
+                ItensCompra itemExistente = verificar.orElse(null);
+                itensCompraDAO.somarQuantidade(itemExistente.getId(), quantidade);
+            }else{
+                ItensCompra novoItem = new ItensCompra(idProd, idGerado, quantidade, produto.getValor());
+                itensCompraDAO.cadastrar(novoItem);
+            }
+            System.out.println("Item adicionado com sucesso!");
+            System.out.println("Deseja adicionar mais algum produto?");
+            System.out.println("1. Adicionar mais algum produto");
+            System.out.println("0. Voltar");
+            opcao = scan.nextInt();
+            scan.nextLine();
+        }
+        List<ItensCompra> itensDaCompra = itensCompraDAO.listarPorCompra(idGerado);
     }
 
     // ===================== MENU USUÁRIO =====================
