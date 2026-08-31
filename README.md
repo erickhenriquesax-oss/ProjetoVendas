@@ -1,7 +1,8 @@
 # Sistema de Vendas — Java + Maven + PostgreSQL
 
 Sistema de console para gerenciamento de vendas, desenvolvido em Java com JDBC puro (sem ORM), Maven como gerenciador de dependências e PostgreSQL como banco de dados. O projeto utiliza conceitos de programação funcional (`Optional`, `Stream`, method references, expressões lambda) e segue uma arquitetura em camadas (model, dao, main).
-Não há front-end ou interface, o objetivo do projeto é fixação e melhoria dos conhecimentos obtidos até então
+Não há front-end ou interface, o objetivo do projeto é fixação e melhoria dos conhecimentos obtidos até então.
+`TEM MUITAS COISAS A MELHORAR`
 
 ## Índice
 
