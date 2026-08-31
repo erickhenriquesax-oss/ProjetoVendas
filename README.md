@@ -156,10 +156,10 @@ O fluxo de "Realizar Compra" foi desenhado para não depender de cálculos feito
 
 ## Decisões de negócio
 
-Algumas regras foram definidas explicitamente ao longo do desenvolvimento e devem ser respeitadas em qualquer evolução futura do sistema:
+Algumas regras foram definidas explicitamente ao longo do desenvolvimento e podem ser alteradas futuramente
 
-- **Valor total nasce nulo**: a compra é criada primeiro, sem total, e só é atualizada depois que todos os itens já foram gravados. Isso exige que a coluna `valor_total` aceite `NULL`.
-- **Produto repetido na mesma compra soma a quantidade** em vez de criar uma nova linha — e o `valor_unitario` da linha original é mantido intacto, mesmo que o preço atual do produto tenha mudado entre as duas adições.
+- **Valor total nasce nulo**: a compra é criada primeiro, sem total, e só é atualizada depois que todos os itens já foram gravados. Isso exige que a coluna `valor_total` aceite `NULL`. `ISSO PODE E PROVAVELMENTE IRÁ SER MODIFICADO`
+- **Produto repetido na mesma compra soma a quantidade** em vez de criar uma nova linha — e o `valor_unitario` da linha original é mantido intacto, mesmo que o preço atual do produto tenha mudado entre as duas adições (`isso pode ser modificado`) .
 
 ## Roadmap / pendências
 
@@ -169,3 +169,4 @@ Algumas regras foram definidas explicitamente ao longo do desenvolvimento e deve
 - [ ] Revisar tratamento de exceções em `cadastrarProduto()` — hoje captura qualquer `Exception` e exibe apenas "Erro ao cadastrar!" sem detalhar a causa real, o que pode mascarar bugs (como já ocorreu com um problema de `Locale` no `Scanner`).
 - [ ] Avaliar uso de transação (commit/rollback) no fluxo de "Realizar Compra": hoje cada `INSERT`/`UPDATE` abre e fecha sua própria conexão; uma falha no meio do processo pode deixar dados parcialmente gravados.
 - [ ] Considerar extrair a lógica de "montar resumo de compra" (usada ao final de `realizarCompra`) em um método reutilizável, já que será necessária também nas telas de listagem de compras.
+- [ ] Melhorar a lógica da compra iniciar com valor Nulo
