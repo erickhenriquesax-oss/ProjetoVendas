@@ -118,6 +118,20 @@ public class Main {
             scan.nextLine();
         }
         List<ItensCompra> itensDaCompra = itensCompraDAO.listarPorCompra(idGerado);
+        float valorTotal = (float) itensDaCompra.stream().mapToDouble(item -> item.getQuantidade() * item.getValor_unitario()).sum();
+        compraDAO.atualizarValorTotal(idGerado, valorTotal);
+
+        ProdutosDAO produtoDAO = new ProdutosDAO();
+        System.out.println("\n=== RESUMO DA COMPRA ===");
+        System.out.println("ID da Compra: " + idGerado);
+        itensDaCompra.forEach(item -> {
+            Produtos produto = produtoDAO.buscarPorId(item.getId_produto()).orElse(null);
+            String nomeProduto = (produto != null) ? produto.getNome() : "Produto removido";
+            System.out.println("Produto: " + produto.getNome() + " Quantidade: " + item.getQuantidade() + " Valor unitário: " + item.getValor_unitario());
+
+        });
+        System.out.println("Valor Total: " + valorTotal);
+
     }
 
     // ===================== MENU USUÁRIO =====================

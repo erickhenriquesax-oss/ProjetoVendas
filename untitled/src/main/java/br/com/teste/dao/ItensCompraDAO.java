@@ -45,7 +45,7 @@ public class ItensCompraDAO {
                     int id_compra = resultado.getInt("id_compra");
                     int id_produto = resultado.getInt("id_produto");
                     int quantidade = resultado.getInt("quantidade");
-                    float valor_unitario = resultado.getFloat("valor_unitario");
+                    float valor_unitario = resultado.getFloat("preco_unitario");
                     itensCompra = new ItensCompra(id, id_produto, id_compra, quantidade, valor_unitario);
                 }
             }
@@ -79,7 +79,7 @@ public class ItensCompraDAO {
                     int id = resultado.getInt("id");
                     int id_produto = resultado.getInt("id_produto");
                     int quantidade = resultado.getInt("quantidade");
-                    float valor_unitario = resultado.getFloat("valor_unitario");
+                    float valor_unitario = resultado.getFloat("preco_unitario");
                     itens.add(new ItensCompra(id, id_produto, idCompra, quantidade, valor_unitario));
                 }
             }
